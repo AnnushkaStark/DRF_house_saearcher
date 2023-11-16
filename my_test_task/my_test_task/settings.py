@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'house_searcher.apps.HouseSearcherConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
