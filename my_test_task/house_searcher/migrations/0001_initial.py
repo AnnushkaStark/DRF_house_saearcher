@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('width', models.DecimalField(decimal_places=7, max_digits=10)),
                 ('lenght', models.DecimalField(decimal_places=7, max_digits=10)),
                 ('cad_number', models.IntegerField()),
-                ('status', models.BooleanField()),
+                ('status', models.BooleanField(default=False)),
                 ('date', models.DateTimeField(auto_now_add=True)),
             ],
         ),

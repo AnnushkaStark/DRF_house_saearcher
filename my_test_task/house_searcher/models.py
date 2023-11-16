@@ -6,7 +6,7 @@ class Houses(models.Model):
     latitude = models.DecimalField(max_digits=10,decimal_places=7)  #Широта
     longitude = models.DecimalField(max_digits=10,decimal_places=7)  #Долгота
     cad_number = models.IntegerField()                              #Кадастровый номер
-    status = models.BooleanField()                      #Ответ сервера
+    status = models.BooleanField(default=False)                      #Ответ сервера
     date = models.DateTimeField(auto_now_add=True)                   #Дата запроса
 
     def __str__(self):
