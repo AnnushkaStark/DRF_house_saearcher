@@ -26,36 +26,24 @@ class PingView(APIView):
 
 class QueryView(APIView):
     '''Получение запроса (широта долгота кадастровый номер)'''
-    def get(self):
-        try: 
-            url = 'http://something-server-url'
-            data = {'latitude':48.857896, 'longitude': 2.295258, 'cad_number': 10989375648} #параменты которые отправляем (Широта долгота кадастровый номер) В запросе тестовые данные для проверки работы сохранения в моделе
-            response = requests.get(url,data=data)  # Отправляем запрос
-            if response.status_code == 200:    #Если статус 200
-                serializer = HousesSerializer(data=data)    #Проверяем валиднось сериалайзера
-                if serializer.is_valid():    #Если сериалайзер валидный 
-                    serializer.save()         #Сохраняем запрос в базе данных 
-                    return Response(serializer.data,status=status.HTTP_201_CREATED)   # Статус 201 запрос сохранен
-                return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)   # Статус Ошибка валидации
-            return Response({'message': 'Error connection to external server'})  # Если статус не 200 вернем это сообщениe
-        except requests.exceptions.Timeout:                    # Обработка исключени timeout
-            return Response({'message': 'Request timed out'})
-        except  requests.exceptions.ConnectionError:            # Connection error
-            return Response({'message': 'Connection Error'})
-
+    def get(self,request):
+        data = {'latitude':48.857896, 'longitude': 2.295258, 'cad_number': 10989375648, 'status':True} # тестовые переданные параметры широта долгота кадастровый номер
+        serializer = HousesSerializer(data=data)    #Проверяем валиднось сериалайзера
+        if serializer.is_valid():    #Если сериалайзер валидный 
+            serializer.save()         #Сохраняем запрос в базе данных 
+            return Response(serializer.data,status=status.HTTP_201_CREATED)   # Статус 201 запрос сохранен
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)   # Статус Ошибка валидации
 
 
 class ResultView(APIView):
     def get(self):
         try:
             url = 'http://something-server-url/'
-            data = {'latitude':48.857896, 'longitude': 2.295258, 'cad_number': 10989375648}
-            message = {'status':True}
+            data = {'latitude':48.857896, 'longitude': 2.295258, 'cad_number': 10989375648, 'status':True}
             response = requests.get(url,data=data)
             if response.status_code == 200:
                 serializer = HousesSerializer(data=data)    #Проверяем валиднось сериалайзера
-                if serializer.is_valid():  #Если сериалайзер валидный 
-                    
+                if serializer.is_valid():  #Если сериалайзер валидный   
                     serializer.save()         #Сохраняем ответ на запрос в базе данных в базе данных 
                     return Response(serializer.data,status=status.HTTP_201_CREATED)   # Статус 201 запрос сохранен
                 return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)   # Статус Ошибка валидации
