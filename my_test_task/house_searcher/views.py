@@ -5,7 +5,7 @@ from .models import Houses
 import requests
 from rest_framework.views import APIView
 from .serializers import HousesSerializer
-
+import random 
 
 
 # Create your views here.
@@ -13,7 +13,7 @@ class PingView(APIView):
     '''Проверка запуcка серверa'''
     def get(self,request):
         try:
-            response = requests.get('http://something-server-url/ping',timeout=60) # Отправляем запрос к стороннему серверу
+            response = requests.get('http://something_server.ru/ping',timeout=60) # Отправляем запрос к стороннему серверу
             if response.status_code == 200:            
                 return Response({'message':'External server is running'})   # Если статус запроса 200 и уложлись в 60 секунд  сервер запущен
             else:
@@ -29,7 +29,7 @@ class QueryView(APIView):
     def get(self,request):
         try:
             #url стороннего сервера
-            url = 'http://something-server-url'
+            url = 'http://something_server.ru'
         # тестовые переданные параметры широта долгота кадастровый номер
             data = {
                 'latitude':48.857896,
@@ -76,9 +76,22 @@ class QueryView(APIView):
 class ResultView(APIView):
     def get(self, request):
         '''Возвращаем запрос клиенту'''
-        last_request = Houses.objects.latest('date') #Выводим последний сохраненный запрос 
-        serializer = HousesSerializer(last_request)
-        return Response(serializer.data)           #Возвращаем последний сохраненный запрос
+        try:
+            #url стороннего сервера
+            url = 'http://something_server.ru'
+        # тестовые переданные параметры широта долгота кадастровый номер
+            data = {
+                'latitude':48.857896,
+                'longitude': 2.295258, 
+                'cad_number': 10989375648,
+                }
+            response = requests.get(url,data=data) # Передаем запрос на сторонний сервер
+            if response.status_code == 200:         # Если запрос к стороннему серверу прошел успешно
+                last_request = Houses.objects.latest('date') #Выводим последний сохраненный запрос 
+                serializer = HousesSerializer(last_request)
+            return Response(serializer.data,status=status.HTTP_200_OK)   #Возвращаем последний сохраненный запрос
+        except Houses.DoesNotExist:
+            return Response({'error':'Object not found'},status=status.HTTP_404_NOT_FOUND)     #Обрабатывем исключение на случай если запрос не был сохранен в ендпойнте query
 
 
 
